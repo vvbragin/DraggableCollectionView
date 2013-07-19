@@ -64,7 +64,7 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
         _panPressGestureRecognizer = [[UIPanGestureRecognizer alloc]
                                       initWithTarget:self action:@selector(handlePanGesture:)];
         _panPressGestureRecognizer.delegate = self;
-
+		
         [_collectionView addGestureRecognizer:_panPressGestureRecognizer];
         
         for (UIGestureRecognizer *gestureRecognizer in _collectionView.gestureRecognizers) {
@@ -241,12 +241,12 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
             mockCell.image = [self imageFromCell:cell];
             mockCenter = mockCell.center;
             [self.collectionView addSubview:mockCell];
-            [UIView
-             animateWithDuration:0.3
-             animations:^{
-                 mockCell.transform = CGAffineTransformMakeScale(1.1f, 1.1f);
-             }
-             completion:nil];
+			if ([self.collectionView.dataSource respondsToSelector:@selector(collectionView:transformForDraggingItemAtIndexPath:)]) {
+				CGAffineTransform transform = [(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionView:self transformForDraggingItemAtIndexPath:indexPath];
+				[UIView animateWithDuration:0.3 animations:^{
+					mockCell.transform = transform;
+				} completion:nil];
+			}
             
             // Start warping
             lastIndexPath = indexPath;
@@ -262,8 +262,8 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
             }
             // Tell the data source to move the item
             [(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionView:self.collectionView
-                                                                              moveItemAtIndexPath:self.layoutHelper.fromIndexPath
-                                                                                      toIndexPath:self.layoutHelper.toIndexPath];
+																				 moveItemAtIndexPath:self.layoutHelper.fromIndexPath
+																						 toIndexPath:self.layoutHelper.toIndexPath];
             
             // Move the item
             [self.collectionView performBatchUpdates:^{
@@ -307,8 +307,8 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
             collectionView:self.collectionView
             canMoveItemAtIndexPath:self.layoutHelper.fromIndexPath
             toIndexPath:indexPath] == NO) {
-        return;
-    }
+			return;
+		}
     [self.collectionView performBatchUpdates:^{
         self.layoutHelper.hideIndexPath = indexPath;
         self.layoutHelper.toIndexPath = indexPath;
