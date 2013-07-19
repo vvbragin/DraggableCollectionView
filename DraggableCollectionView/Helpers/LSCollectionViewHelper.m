@@ -37,6 +37,7 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
     _ScrollingDirection scrollingDirection;
     BOOL canWarp;
     BOOL canScroll;
+	BOOL _hasShouldAlterTranslationDelegateMethod;
 }
 @property (readonly, nonatomic) LSCollectionViewLayoutHelper *layoutHelper;
 @end
@@ -218,6 +219,8 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
         return;
     }
     
+	_hasShouldAlterTranslationDelegateMethod = [self.collectionView.dataSource respondsToSelector:@selector(collectionView:alterTranslation:)];
+	
     NSIndexPath *indexPath = [self indexPathForItemClosestToPoint:[sender locationInView:self.collectionView]];
     
     switch (sender.state) {
@@ -317,6 +320,9 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
     if(sender.state == UIGestureRecognizerStateChanged) {
         // Move mock to match finger
         fingerTranslation = [sender translationInView:self.collectionView];
+		if (_hasShouldAlterTranslationDelegateMethod) {
+			[(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionView:self.collectionView alterTranslation:&fingerTranslation];
+		}
         mockCell.center = _CGPointAdd(mockCenter, fingerTranslation);
         
         // Scroll when necessary
