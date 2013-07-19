@@ -242,7 +242,7 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
             mockCenter = mockCell.center;
             [self.collectionView addSubview:mockCell];
 			if ([self.collectionView.dataSource respondsToSelector:@selector(collectionView:transformForDraggingItemAtIndexPath:)]) {
-				CGAffineTransform transform = [(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionView:self transformForDraggingItemAtIndexPath:indexPath];
+				CGAffineTransform transform = [(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionView:self.collectionView transformForDraggingItemAtIndexPath:indexPath];
 				[UIView animateWithDuration:0.3 animations:^{
 					mockCell.transform = transform;
 				} completion:nil];
