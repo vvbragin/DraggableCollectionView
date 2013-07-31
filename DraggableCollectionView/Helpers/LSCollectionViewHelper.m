@@ -241,9 +241,10 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
             mockCell.image = [self imageFromCell:cell];
             mockCenter = mockCell.center;
             [self.collectionView addSubview:mockCell];
-			if ([self.collectionView.dataSource respondsToSelector:@selector(collectionView:transformForDraggingItemAtIndexPath:)]) {
-				CGAffineTransform transform = [(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionView:self.collectionView transformForDraggingItemAtIndexPath:indexPath];
-				[UIView animateWithDuration:0.3 animations:^{
+			if ([self.collectionView.dataSource respondsToSelector:@selector(collectionView:transformForDraggingItemAtIndexPath:duration:)]) {
+				NSTimeInterval duration = 0.3;
+				CGAffineTransform transform = [(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionView:self.collectionView transformForDraggingItemAtIndexPath:indexPath duration:&duration];
+				[UIView animateWithDuration:duration animations:^{
 					mockCell.transform = transform;
 				} completion:nil];
 			}
