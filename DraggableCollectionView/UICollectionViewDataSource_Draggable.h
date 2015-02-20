@@ -20,4 +20,8 @@
 - (void)collectionView:(UICollectionView *)collectionView alterTranslation:(CGPoint *)translation;
 - (CGAffineTransform)collectionView:(UICollectionView *)collectionView transformForDraggingItemAtIndexPath:(NSIndexPath *)indexPath duration:(NSTimeInterval *)duration;
 
+- (BOOL)collectionView:(UICollectionView *)collectionView draggableWhenTouchedAtPoint:(CGPoint)point;
+
+- (CGFloat)collectionViewMinimumLongPressDuration:(UICollectionView *)collectionView;
+
 @end

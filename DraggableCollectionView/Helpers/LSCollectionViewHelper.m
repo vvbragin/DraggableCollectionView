@@ -59,6 +59,10 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
         _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc]
                                        initWithTarget:self
                                        action:@selector(handleLongPressGesture:)];
+
+        _longPressGestureRecognizer.delegate = self;
+        [self customizeMinimumLongPressDuration];
+        
         [_collectionView addGestureRecognizer:_longPressGestureRecognizer];
         
         _panPressGestureRecognizer = [[UIPanGestureRecognizer alloc]
@@ -77,6 +81,14 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
         [self layoutChanged];
     }
     return self;
+}
+
+- (void)customizeMinimumLongPressDuration {
+    
+    if ([self.collectionView.dataSource respondsToSelector:@selector(collectionViewMinimumLongPressDuration:)]) {
+        
+        ((UILongPressGestureRecognizer *)_longPressGestureRecognizer).minimumPressDuration = [(id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource collectionViewMinimumLongPressDuration:self.collectionView];
+    }
 }
 
 - (LSCollectionViewLayoutHelper *)layoutHelper
@@ -151,6 +163,17 @@ typedef NS_ENUM(NSInteger, _ScrollingDirection) {
     }
     
     return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    
+    if (![self.collectionView.dataSource respondsToSelector:@selector(collectionView:draggableWhenTouchedAtPoint:)]) {
+        return YES;
+    }
+    
+    CGPoint point = [touch locationInView:self.collectionView];
+    id<UICollectionViewDataSource_Draggable> dataSource = (id<UICollectionViewDataSource_Draggable>)self.collectionView.dataSource;
+    return [dataSource collectionView:self.collectionView draggableWhenTouchedAtPoint:point];
 }
 
 - (NSIndexPath *)indexPathForItemClosestToPoint:(CGPoint)point
